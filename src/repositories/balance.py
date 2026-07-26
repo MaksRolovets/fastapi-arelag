@@ -16,8 +16,7 @@ async def get_balance_user_id(session: AsyncSession, user_id : int, currency : C
     result =  await session.execute(q)
     return result.scalar()
 
-async def create_user_balance(session: AsyncSession,user_id : int):
-
+async def create_user_balance(session: AsyncSession, user_id: int):
     balances = [
         UserBalance(
             user_id=user_id,
@@ -29,7 +28,9 @@ async def create_user_balance(session: AsyncSession,user_id : int):
     ]
 
     session.add_all(balances)
-    await session.commit()
+    await session.flush()
+
+    return balances
 
 async def update_user_balance(session: AsyncSession,balance: UserBalance, amount: Decimal) -> UserBalance:
     balance.amount += amount
