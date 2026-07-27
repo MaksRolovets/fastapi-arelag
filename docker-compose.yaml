@@ -38,7 +38,34 @@ services:
 
     env_file:
       - .env
+  worker:
+    build: .
+    container_name: task_worker
+    working_dir: /app/src
 
+    command: taskiq worker worker:broker 
+
+    volumes:
+      - .:/app
+
+    depends_on:
+      - redis
+
+    env_file:
+      - .env
+  redis:
+    image: redis:7-alpine
+    container_name: task_redis
+
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD}
+
+    restart: always
+
+    ports:
+      - "6379:6379"
+
+      
 volumes:
-
   postgres_data:

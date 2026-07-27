@@ -16,6 +16,8 @@ alembic = "^1.18.5"
 pydantic-settings = "^2.14.2"
 python-dotenv = "^1.2.2"
 psycopg = {extras = ["binary"], version = "^3.3.4"}
+taskiq = "^0.12.4"
+taskiq-redis = "^1.2.3"
 
 
 
