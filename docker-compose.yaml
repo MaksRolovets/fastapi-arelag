@@ -38,6 +38,34 @@ services:
 
     env_file:
       - .env
+  redis:
+    image: redis:7-alpine
+    container_name: task_redis
+
+    command: redis-server --requirepass redis_password
+
+    ports:
+      - "6379:6379"
+
+    restart: always
+
+  worker:
+    build: .
+    working_dir: /app/src
+
+    container_name: celery_worker
+
+    command: celery -A core.celery:celery_app worker --loglevel=info
+
+    volumes:
+      - .:/app
+
+    depends_on:
+      - redis
+      - db
+
+    env_file:
+      - .env
 
 volumes:
 
