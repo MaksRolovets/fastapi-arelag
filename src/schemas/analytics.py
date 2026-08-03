@@ -4,7 +4,7 @@ from decimal import Decimal
 from pydantic import BaseModel
 
 
-class TransactionAnalysisModel(BaseModel):
+class TransactionAnalysisModel(BaseModel): # for taskiq
     start_date: date
     end_date: date
 
@@ -17,3 +17,10 @@ class TransactionAnalysisModel(BaseModel):
 
     transactions_count: int
     not_rollbacked_transactions_count: int
+
+class TransactionAnalyticsModel(BaseModel): # for clickhouse
+    transaction_id: int
+    user_id: int
+    amount: Decimal
+    currency: str
+    status: str

@@ -1,6 +1,10 @@
 from datetime import datetime, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from events.schemas import TransactionCreatedEvent
+from repositories.clickhouse import insert_transaction_event
+from repositories.clickhouse import get_transaction_events
+from schemas.analytics import TransactionAnalyticsModel
 
 from repositories.analytics import (
     get_registered_users_count,
@@ -107,3 +111,25 @@ async def get_transaction_analysis_service(
         dt_lt -= timedelta(weeks=1)
 
     return results
+
+
+async def process_transaction_created_event(
+    event: TransactionCreatedEvent,
+) -> None:
+    await insert_transaction_event(event)
+
+
+
+async def get_transaction_events_service():
+    rows = await get_transaction_events()
+
+    return [
+        TransactionAnalyticsModel(
+            transaction_id=row[0],
+            user_id=row[1],
+            amount=row[2],
+            currency=row[3],
+            status=row[4],
+        )
+        for row in rows
+    ]

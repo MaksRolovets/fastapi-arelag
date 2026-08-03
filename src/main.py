@@ -4,7 +4,6 @@ from fastapi import FastAPI
 from routers.user import router as user_router
 from routers.transaction import router as trans_router
 from routers.analytics import router as anal_router
-from routers.kafka import router as kafka_router
 
 from schemas.user import *
 from schemas.enums import *
@@ -26,5 +25,4 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(user_router)
 app.include_router(trans_router)
 app.include_router(anal_router)
-app.include_router(kafka_router)
 

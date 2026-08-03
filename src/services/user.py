@@ -44,6 +44,8 @@ async def create_user_service(session: AsyncSession, user : RequestUserModel):
 
     db_user = await create_user(session, user)
     await create_user_balance(session, user_id=db_user.id)
+    await session.commit()
+
     return UserModel(
         id=db_user.id,
         email=db_user.email,

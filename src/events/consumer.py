@@ -1,9 +1,9 @@
 import json
 
 from aiokafka import AIOKafkaConsumer
-
+from services.analytics import process_transaction_created_event
 from core.config import settings
-
+from events.serializers import deserialize
 
 async def consume_transactions() -> None:
     consumer = AIOKafkaConsumer(
@@ -12,20 +12,14 @@ async def consume_transactions() -> None:
         group_id="transaction-consumer",
         auto_offset_reset="earliest",
         enable_auto_commit=True,
-        value_deserializer=lambda value: json.loads(value.decode("utf-8")),
     )
 
     await consumer.start()
 
     try:
         async for message in consumer:
-            print(
-                f"Received message: "
-                f"topic={message.topic}, "
-                f"partition={message.partition}, "
-                f"offset={message.offset}, "
-                f"value={message.value}"
-            )
+            event = deserialize(message.value)
+            await process_transaction_created_event(event)
     finally:
         await consumer.stop()
 

@@ -1,5 +1,5 @@
 import orjson
-
+from events.serializers import serialize
 import core.kafka as kafka
 from core.config import settings
 from events.schemas import TransactionCreatedEvent
@@ -13,5 +13,5 @@ async def publish_transaction_created(
 
     await kafka.producer.send_and_wait(
         topic=settings.KAFKA_TOPIC_TRANSACTIONS,
-        value=orjson.dumps(event.model_dump(mode="json")),
-    )
+        value=serialize(event))
+    
