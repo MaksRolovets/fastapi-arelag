@@ -1,23 +1,26 @@
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from db.database import get_async_session
-from schemas.analytics import TransactionAnalysisModel
-from services.analytics import get_transaction_analysis_service
-
-router = APIRouter(
-    prefix="/transactions",
-    tags=["Transaction"],
-)
+from fastapi import APIRouter
+from tasks.analytics import generate_transaction_analysis, get_task_result
 
 
-@router.get(
-    "/analysis",
-    response_model=list[TransactionAnalysisModel],
-    status_code=status.HTTP_200_OK,
-)
-async def get_transaction_analysis(
-    session: AsyncSession = Depends(get_async_session),
-) -> list[TransactionAnalysisModel]:
+router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
-    return await get_transaction_analysis_service(session)
+
+@router.post("/transactions")
+async def create_analysis():
+    task = generate_transaction_analysis.delay()
+    return {"task_id": task.id}
+
+
+@router.get("/tasks/{task_id}")
+async def get_analysis(task_id: str):
+    task = get_task_result(task_id)
+
+    response = {
+        "task_id": task.id,
+        "status": task.status,
+    }
+
+    if task.ready():
+        response["result"] = task.result
+
+    return response

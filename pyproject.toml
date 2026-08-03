@@ -16,6 +16,8 @@ alembic = "^1.18.5"
 pydantic-settings = "^2.14.2"
 python-dotenv = "^1.2.2"
 psycopg = {extras = ["binary"], version = "^3.3.4"}
+celery = "^5.6.3"
+redis = "^8.0.1"
 
 
 
