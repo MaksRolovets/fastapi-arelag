@@ -12,6 +12,6 @@ class TransactionModel(BaseModel):
     id: typing.Optional[int]
     user_id: typing.Optional[int] = None
     currency: typing.Optional[CurrencyEnum] = None
-    amount: typing.Optional[float] = None
+    amount: typing.Optional[Decimal] = None
     status: typing.Optional[TransactionStatusEnum] = None
     created: typing.Optional[datetime] = None
