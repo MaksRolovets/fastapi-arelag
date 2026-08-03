@@ -8,6 +8,8 @@ from fastapi import  status
 
 from repositories.user import get_user_by_id
 
+from events.producer import publish_transaction_created
+from events.schemas import TransactionCreatedEvent
 from exceptions.exceptions import(BadRequestDataException,
                                    UserNotExistsException,
                                      CreateTransactionForBlockedUserException,
@@ -55,6 +57,17 @@ async def create_transaction_service(session : AsyncSession,user_id : int,  curr
     await update_user_balance(session,db_user_balance,amount)
     db_transaction = await create_transaction(session, user_id, currency, amount)
     await session.commit()
+
+    await publish_transaction_created(
+    TransactionCreatedEvent(
+        transaction_id=db_transaction.id,
+        user_id=db_transaction.user_id,
+        amount=db_transaction.amount,
+        currency=db_transaction.currency,
+        status=db_transaction.status,
+        )
+    )
+
     return TransactionModel(
         id=db_transaction.id,
         user_id=db_transaction.user_id,
@@ -103,4 +116,14 @@ async def rollback_transaction_service(session: AsyncSession, user_id : int,  tr
     await update_user_balance(session, db_user_balance, rollback_amount)
     await update_transaction(session, db_transaction, TransactionStatusEnum.roll_backed)
     await session.commit()
+
+    await publish_transaction_created(
+    TransactionCreatedEvent(
+        transaction_id=db_transaction.id,
+        user_id=db_transaction.user_id,
+        amount=db_transaction.amount,
+        currency=db_transaction.currency,
+        status=db_transaction.status,
+    )
+)
     

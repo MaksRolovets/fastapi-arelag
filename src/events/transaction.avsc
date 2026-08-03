@@ -1,0 +1,27 @@
+{
+  "type": "record",
+  "name": "TransactionCreatedEvent",
+  "namespace": "events",
+  "fields": [
+    {
+      "name": "transaction_id",
+      "type": "long"
+    },
+    {
+      "name": "user_id",
+      "type": "long"
+    },
+    {
+      "name": "amount",
+      "type": "string"
+    },
+    {
+      "name": "currency",
+      "type": "string"
+    },
+    {
+      "name": "status",
+      "type": "string"
+    }
+  ]
+}

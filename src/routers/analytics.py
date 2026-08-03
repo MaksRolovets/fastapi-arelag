@@ -1,6 +1,8 @@
 from tasks.analytics import generate_transaction_analysis
 from fastapi import APIRouter, HTTPException
 from core.broker import broker
+from schemas.analytics import TransactionAnalyticsModel
+from services.analytics import get_transaction_events_service
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -27,3 +29,10 @@ async def get_task_result(task_id: str):
         "status": "SUCCESS",
         "result": result.return_value,
     }
+
+@router.get(
+    "/transactions-clickhouse",
+    response_model=list[TransactionAnalyticsModel],
+)
+async def get_transactions():
+    return await get_transaction_events_service()
